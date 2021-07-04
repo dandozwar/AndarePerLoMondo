@@ -1,0 +1,50 @@
+/* POPOVER */
+.popover_content {
+	text-align: center;
+	padding-bottom: 20px;
+	background-color: white;
+	visibility: hidden;
+	position: fixed;
+	right: 100px;
+	top: 100px;
+	box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.3);
+	width: 610px;
+	z-index: 10;
+}
+
+.popover_localita {
+	color: #782b34;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.popover_localita:hover {
+	color: #ff0000;
+	text-decoration: underline;
+}
+
+
+.popover_persona {
+	color: #782b34;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.popover_persona:hover {
+	color: #ff0000;
+	text-decoration: underline;
+}
+
+.popover_close {
+	text-align: right;
+	margin-top: 10px;
+	margin-right: 15px;
+	color: #782b34;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.popover_close:hover {
+	color: #ff0000;
+	text-decoration: none;
+}
