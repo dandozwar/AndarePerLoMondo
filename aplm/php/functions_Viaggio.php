@@ -193,13 +193,13 @@
 		if ($res[0] == NULL) {
 			$dn = "?";
 		} else {
-			$dn = substr($res[0], 0, 4);
+			$dn = intval(substr($res[0], 0, 4));
 		};
 		$dm = "";
 		if ($res[1] == NULL) {
 			$dm = "?";
 		} else {
-			$dm = substr($res[1], 0, 4);
+			$dm = intval(substr($res[1], 0, 4));
 		};
 		return ("(".$dn."-".$dm.")");
 	};
