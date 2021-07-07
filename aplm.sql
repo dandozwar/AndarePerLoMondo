@@ -125,6 +125,7 @@ INSERT INTO `destinatario` (`scopo`, `persona`) VALUES
 (30, 21),
 (30, 20),
 (31, 24),
+(32, 25),
 (33, 27),
 (34, 28),
 (36, 29);
