@@ -29,23 +29,20 @@
 
 	// Ottengo l'id della persona
 	if (!isset($_GET["persona"])) {
-		//header("Location: index.php");
+		header("Location: index.php");
 	};
 
 	// Raccolgo i dati generali della persona
-	$q = $conn->prepare('SELECT * FROM Persona WHERE id = ?');
+	$q = $conn->prepare('SELECT Persona.id, nome, cognome, soprannome, data_nascita, luogo_nascita, data_morte, luogo_morte, uri FROM Persona, Biografia WHERE Persona.id = ? AND Persona.id = persona');
 	$q->bind_param('i', $_GET["persona"]);
 	$q->execute();
 	$q->store_result();
 	if ($q->num_rows == 0) {
-		//header("Location: index.php");
+		header("Location: index.php");
 	};
-	$q->bind_result($idpersona, $nome, $cognome, $soprannome, $data_nascita, $ln_id, $data_morte, $lm_id, $uri, $bio);
+	$q->bind_result($idpersona, $nome, $cognome, $soprannome, $data_nascita, $ln_id, $data_morte, $lm_id, $uri);
 	$q->fetch();
 	$q->free_result();
-	if ($bio == NULL) {
-		//header("Location: index.php");
-	};
 	$q->free_result();
 	$dn_completa = get_Data($data_nascita, False);
 	$dn_anno = get_Data($data_nascita, True);
@@ -177,19 +174,15 @@
 			</div>
 		</div>
 		<div class="stop_float">
-			<p>
-				<h3>Note</h3>
-				<ol>
-					<?php
-						$q = $conn->query('SELECT DISTINCT Fonte.id, Fonte.cit_biblio FROM Fonte, Viaggio, partecipa_viaggio WHERE Viaggio.fonte = Fonte.id AND partecipa_viaggio.persona = '.$idpersona.' AND partecipa_viaggio.viaggio = Viaggio.id ORDER BY Fonte.id');
-						$totfont = $q->num_rows;
-						for ($f = 0; $f < $totfont; $f++) {
-							$font = $q->fetch_row();
-							echo '<li id="f'.$font[0].'">'.$font[1].'</li>';
-						};
-					?>
-				</ol>
-			</p>
+			<h3>Note</h3>
+			<?php
+				$q = $conn->query('SELECT DISTINCT Fonte.id, Fonte.cit_biblio FROM Fonte, Viaggio, partecipa_viaggio WHERE Viaggio.fonte = Fonte.id AND partecipa_viaggio.persona = '.$idpersona.' AND partecipa_viaggio.viaggio = Viaggio.id ORDER BY Fonte.id');
+				$totfont = $q->num_rows;
+				for ($f = 0; $f < $totfont; $f++) {
+					$font = $q->fetch_row();
+					echo '<p id="f'.$font[0].'">['.$font[0].'] '.$font[1].'</p>';
+				};
+			?>
 		</div>
 		<footer>
 			<div id="access_panel" hidden="hidden">

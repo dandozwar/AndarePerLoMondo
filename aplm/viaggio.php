@@ -153,7 +153,7 @@
 				};
 				// Partecipanti viaggio
 				echo ' Partecipanti: ';
-				$q = $conn->query('SELECT nome, cognome, id, uri, biografia FROM partecipa_viaggio, Persona WHERE viaggio ='.$idviaggio.' AND persona =  Persona.id');
+				$q = $conn->query('SELECT nome, cognome, id, uri FROM partecipa_viaggio, Persona WHERE viaggio ='.$idviaggio.' AND persona =  id');
 				$part = $q->num_rows;
 				if ($part == 1) {
 					$persona = $q->fetch_row();
@@ -162,9 +162,11 @@
 							<div class="popover_close" onclick="pop_out(this)">X</div>
 							<h3>'.$persona[0].' '.$persona[1].' '.get_Vita($persona[2], $conn).'</h3>
 							<p>'.get_Bio($persona[2], $conn).'</p>';
-					if ($persona[4] != NULL) {
-						echo '<p><a href="./presentazione.php?persona='.$persona[2].'" target="_blank">Apri biografia...</a><p>';
+					$qBio = $conn->query('SELECT id FROM Biografia WHERE persona ='.$persona[2]);
+					if ($qBio->num_rows != 0) {
+						echo '<p><a href="./presentazione.php?persona='.$persona[2].'" target="_self">Vai alla presentazione</a>.<p>';
 					};
+					$qBio->free_result();
 					if ($persona[3] != NULL) {
 						echo '<p><a href="'.$persona[3].'" target="_blank">Vai a una biografia esterna</a>.<p>';
 					};
@@ -178,8 +180,9 @@
 									<div class="popover_close" onclick="pop_out(this)">X</div>
 									<h3>'.$persona[0].' '.$persona[1].'</h3>
 									<p>'.get_Bio($persona[2], $conn).'</p>';
-							if ($persona[4] != NULL) {
-								echo '<p><a href="./presentazione.php?persona='.$persona[2].'" target="_blank">Apri biografia...</a><p>';
+							$qBio = $conn->query('SELECT id FROM Biografia WHERE persona ='.$persona[2]);
+							if ($qBio->num_rows != 0) {
+								echo '<p><a href="./presentazione.php?persona='.$persona[2].'" target="_self">Vai alla presentazione</a>.<p>';
 							};
 							if ($persona[3] != NULL) {
 								echo '<p><a href="'.$persona[3].'" target="_blank">Vai a una biografia esterna</a>.<p>';
@@ -191,8 +194,9 @@
 									<div class="popover_close" onclick="pop_out(this)">X</div>
 									<h3>'.$persona[0].' '.$persona[1].'</h3>
 									<p>'.get_Bio($persona[2], $conn).'</p>';
-							if ($persona[4] != NULL) {
-								echo '<p><a href="./presentazione.php?persona='.$persona[2].'" target="_blank">Apri biografia...</a><p>';
+							$qBio = $conn->query('SELECT id FROM Biografia WHERE persona ='.$persona[2]);
+							if ($qBio->num_rows != 0) {
+								echo '<p><a href="./presentazione.php?persona='.$persona[2].'" target="_self">Vai alla presentazione</a>.<p>';
 							};
 							if ($persona[3] != NULL) {
 								echo '<p><a href="'.$persona[3].'" target="_blank">Vai a una biografia esterna</a>.<p>';
@@ -239,7 +243,7 @@
 								<h3>Località: '.$luogo_partenza.'</h3>
 								<p>Coordinate: <span id="lat'.$contaover.'">'.$lp_lat.'</span> e <span id="lon'.$contaover.'">'.$lp_lon.'<span></p>';
 				if ($lp_uri != NULL) {
-					echo '<p><a href="'.$lp_uri.'" target="_blank">Vedi di più...</a><p>';
+					echo '<p><a href="'.$lp_uri.'" target="_blank">Vedi più dettagli su siti esterni</a>.<p>';
 				};
 				echo	'<div id="map'.$contaover.'" class="map"></div>
 							  </div>';
@@ -264,7 +268,7 @@
 						$text = $text.get_Scopo("Tappa", $tappa[0], $conn);
 						$text = $text.'. ';
 						// Partecipanti tappa
-						$q3 = $conn->query('SELECT nome, cognome, id, uri, biografia FROM partecipa_tappa, Persona WHERE tappa ='.$tappa[0].' AND persona = id');
+						$q3 = $conn->query('SELECT nome, cognome, id, uri FROM partecipa_tappa, Persona WHERE tappa ='.$tappa[0].' AND persona = id');
 						$part = $q3->num_rows;
 						$text = $text.'Partecipanti: ';
 						if ($part == 1) {
@@ -274,9 +278,11 @@
 						<div class="popover_close" onclick="pop_out(this)">X</div>
 								<h3>'.$persona[0].' '.$persona[1].' '.get_Vita($persona[2], $conn).'</h3>
 								<p>'.get_Bio($persona[2], $conn).'</p>';
-							if ($persona[4] != NULL) {
-								$text = $text.'<p><a href="./presentazione.php?persona='.$persona[2].'" target="_blank">Apri biografia...</a><p>';
+							$qBio = $conn->query('SELECT id FROM Biografia WHERE persona ='.$persona[2]);
+							if ($qBio->num_rows != 0) {
+								$text = $text.'<p><a href="./presentazione.php?persona='.$persona[2].'" target="_self">Vai alla presentazione</a>.<p>';
 							};
+							$qBio->free_result();
 							if ($persona[3] != NULL) {
 								$text = $text.'<p><a href="'.$persona[3].'" target="_blank">Vai a una biografia esterna</a>.<p>';
 							};
@@ -290,9 +296,11 @@
 						<div class="popover_close" onclick="pop_out(this)">X</div>
 								<h3>'.$persona[0].' '.$persona[1].'</h3>
 								<p>'.get_Bio($persona[2], $conn).'</p>';
-									if ($persona[4] != NULL) {
-										$text = $text.'<p><a href="./presentazione.php?persona='.$persona[2].'" target="_blank">Apri biografia...</a><p>';
+									$qBio = $conn->query('SELECT id FROM Biografia WHERE persona ='.$persona[2]);
+									if ($qBio->num_rows != 0) {
+										$text = $text.'<p><a href="./presentazione.php?persona='.$persona[2].'" target="_self">Vai alla presentazione</a>.<p>';
 									};
+									$qBio->free_result();
 									if ($persona[3] != NULL) {
 										$text = $text.'<p><a href="'.$persona[3].'" target="_blank">Vai a una biografia esterna</a>.<p>';
 									};
@@ -303,9 +311,11 @@
 						<div class="popover_close" onclick="pop_out(this)">X</div>
 								<h3>'.$persona[0].' '.$persona[1].'</h3>
 								<p>'.get_Bio($persona[2], $conn).'</p>';
-									if ($persona[4] != NULL) {
-										$text = $text.'<p><a href="./presentazione.php?persona='.$persona[2].'" target="_blank">Apri biografia...</a><p>';
+									$qBio = $conn->query('SELECT id FROM Biografia WHERE persona ='.$persona[2]);
+									if ($qBio->num_rows != 0) {
+										$text = $text.'<p><a href="./presentazione.php?persona='.$persona[2].'" target="_self">Vai alla presentazione</a>.<p>';
 									};
+									$qBio->free_result();
 									if ($persona[3] != NULL) {
 										$text = $text.'<p><a href="'.$persona[3].'" target="_blank">Vai a una biografia esterna</a>.<p>';
 									};
@@ -316,7 +326,7 @@
 						$q3->free_result();
 						$text = $text.'. ';
 						//Merci tappa
-						$q4 = $conn->query('SELECT Merce.tipo, Merce.quantita, Merce.valore FROM trasporta, Merce WHERE trasporta.tappa ='.$tappa[0]);
+						$q4 = $conn->query('SELECT Merce.tipo, Merce.quantita, Merce.valore FROM trasporta, Merce WHERE trasporta.merce = id AND tappa ='.$tappa[0]);
 						$merci = $q4->num_rows;
 						if ($merci != 0) {
 							$text = $text.'Merci trasportate: ';
@@ -381,20 +391,12 @@
 			</div>
 		</div>
 		<div>
-			<p>
-				<h3>Note</h3>
-				<?php
-					echo '<ol>';
-					$q = $conn->query('SELECT DISTINCT Fonte.id, Fonte.cit_biblio FROM Fonte, Viaggio WHERE Viaggio.fonte = Fonte.id ORDER BY Fonte.id');
-					$totfont = $q->num_rows;
-					echo '<ol>';
-					for ($f = 0; $f < $totfont; $f++) {
-						$font = $q->fetch_row();
-						echo '<li id="'.$font[0].'">'.$font[1].'</li>';
-					};
-					echo '</ol>';
-				?>
-			</p>
+			<h3>Note</h3>
+			<?php
+				$q = $conn->query('SELECT DISTINCT Fonte.id, cit_biblio FROM Fonte, Viaggio WHERE fonte = Fonte.id  AND Viaggio.id = '.$idviaggio);
+				$font = $q->fetch_row();
+				echo '<p id="'.$font[0].'">['.$font[0].'] '.$font[1].'</p>';
+			?>
 		</div>
 		<div>
 			<h3>Commenti</h3>
