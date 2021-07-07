@@ -72,7 +72,7 @@
 	// Funzione per i destinatari
 	function get_Destinatari ($tipo, $idscopo, $conn) {
 		$textDest = "";
-		$q2 = $conn->query('SELECT nome, cognome, id, uri, biografia FROM destinatario, Persona WHERE id = persona AND scopo = '.$idscopo);
+		$q2 = $conn->query('SELECT nome, cognome, id, uri FROM destinatario, Persona WHERE id = persona AND scopo = '.$idscopo);
 		$k = $q2->num_rows;
 		if ($k > 0) {
 			$textDest = $textDest.' ';
@@ -83,10 +83,12 @@
 								<div class="popover_close" onclick="pop_out(this)">X</div>
 						<h3>'.$dest[0].' '.$dest[1].' '.get_Vita($dest[2], $conn).'</h3>
 								<p>'.get_Bio($dest[2], $conn).'</p>';
-				if ($dest[4] != NULL) {
-					$textDest = $textDest.'<p><a href="./presentazione.php?persona='.$dest[2].'" target="_blank">Vai alla biografia esterna</a>.<p>';
+				$qBio = $conn->query('SELECT id FROM Biografia WHERE persona ='.$dest[2]);
+				if ($qBio->num_rows != 0) {
+					$textDest = $textDest.'<p><a href="./presentazione.php?persona='.$dest[2].'" target="_blank">Vai alla presentazione</a>.<p>';
 				};
-				if ($dest[3] != NULL) {
+				$qBio->free_result();
+				if ($dest[3] != NULL) { 
 					$textDest = $textDest.'<p><a href="'.$dest[3].'" target="_blank">Vai alla biografia esterna</a>.<p>';
 				};
 				$textDest = $textDest.'</div>';
@@ -99,9 +101,11 @@
 								<div class="popover_close" onclick="pop_out(this)">X</div>
 						<h3>'.$dest[0].' '.$dest[1].'</h3>
 								<p>'.get_Bio($dest[2], $conn).'</p>';
-						if ($dest[4] != NULL) {
-							$textDest = $textDest.'<p><a href="./presentazione.php?persona='.$dest[2].'" target="_blank">Apri biografia...</a><p>';
+						$qBio = $conn->query('SELECT id FROM Biografia WHERE persona ='.$dest[2]);
+						if ($qBio->num_rows != 0) {
+							$textDest = $textDest.'<p><a href="./presentazione.php?persona='.$dest[2].'" target="_blank">Vai alla presentazione</a>.<p>';
 						};
+						$qBio->free_result();
 						if ($dest[3] != NULL) {
 							$textDest = $textDest.'<p><a href="'.$dest[3].'" target="_blank">Vai alla biografia esterna</a>.<p>';
 						};
@@ -112,9 +116,11 @@
 								<div class="popover_close" onclick="pop_out(this)">X</div>
 						<h3>'.$dest[0].' '.$dest[1].'</h3>
 							<p>'.get_Bio($dest[2], $conn).'</p>';
-						if ($dest[4] != NULL) {
-							$textDest = $textDest.'<p><a href="./presentazione.php?persona='.$dest[2].'" target="_blank">Apri biografia...</a><p>';
+						$qBio = $conn->query('SELECT id FROM Biografia WHERE persona ='.$dest[2]);
+						if ($qBio->num_rows != 0) {
+							$textDest = $textDest.'<p><a href="./presentazione.php?persona='.$dest[2].'" target="_blank">Vai alla presentazione</a>.<p>';
 						};
+						$qBio->free_result();
 						if ($dest[3] != NULL) {
 							$textDest = $textDest.'<p><a href="'.$dest[3].'" target="_blank">Vai alla biografia esterna</a>.<p>';
 						};
@@ -130,7 +136,7 @@
 	// Funzione per raccogliere i mandanti
 	function get_Mandanti ($tipo, $idscopo, $conn) {
 		$textMand = "";
-		$q3 = $conn->query('SELECT nome, cognome, id, uri, biografia FROM mandante, Persona WHERE id = persona AND scopo = '.$idscopo);
+		$q3 = $conn->query('SELECT nome, cognome, id, uri FROM mandante, Persona WHERE id = persona AND scopo = '.$idscopo);
 		$k = $q3->num_rows;
 		if ($k > 0) {
 			$textMand = $textMand.' per conto di ';
@@ -141,9 +147,11 @@
 								<div class="popover_close" onclick="pop_out(this)">X</div>
 						<h3>'.$mand[0].' '.$mand[1].' '.get_Vita($mand[2], $conn).'</h3>
 								<p>'.get_Bio($mand[2], $conn).'</p>';
-				if ($mand[4] != NULL) {
-					$textMand = $textMand.'<p><a href="./presentazione.php?persona='.$mand[2].'" target="_blank">Vai alla biografia esterna</a>.<p>';
+				$qBio = $conn->query('SELECT id FROM Biografia WHERE persona ='.$mand[2]);
+				if ($qBio->num_rows != 0) {
+					$textDest = $textDest.'<p><a href="./presentazione.php?persona='.$mand[2].'" target="_blank">Vai alla presentazione</a>.<p>';
 				};
+				$qBio->free_result();
 				if ($mand[3] != NULL) {
 					$textMand = $textMand.'<p><a href="'.$mand[3].'" target="_blank">Vai alla biografia esterna</a>.<p>';
 				};
@@ -157,9 +165,11 @@
 									<div class="popover_close" onclick="pop_out(this)">X</div>
 							<h3>'.$mand[0].' '.$mand[1].' '.get_Vita($mand[2], $conn).'</h3>
 									<p>'.get_Bio($mand[2], $conn).'</p>';
-					if ($mand[4] != NULL) {
-						$textMand = $textMand.'<p><a href="./presentazione.php?persona='.$mand[2].'" target="_blank">Apri biografia...</a><p>';
+					$qBio = $conn->query('SELECT id FROM Biografia WHERE persona ='.$mand[2]);
+					if ($qBio->num_rows != 0) {
+						$textDest = $textDest.'<p><a href="./presentazione.php?persona='.$mand[2].'" target="_blank">Vai alla presentazione</a>.<p>';
 					};
+					$qBio->free_result();
 					if ($mand[3] != NULL) {
 						$textMand = $textMand.'<p><a href="'.$mand[3].'" target="_blank">Vai alla biografia esterna</a>.<p>';
 					};
@@ -170,9 +180,11 @@
 										<div class="popover_close" onclick="pop_out(this)">X</div>
 								<h3>'.$mand[0].' '.$mand[1].' '.get_Vita($mand[2], $conn).'</h3>
 										<p>'.get_Bio($mand[2], $conn).'</p>';
-						if ($mand[4] != NULL) {
-							$textMand = $textMand.'<p><a href="./presentazione.php?persona='.$mand[2].'" target="_blank">Apri biografia...</a><p>';
+						$qBio = $conn->query('SELECT id FROM Biografia WHERE persona ='.$mand[2]);
+						if ($qBio->num_rows != 0) {
+							$textDest = $textDest.'<p><a href="./presentazione.php?persona='.$mand[2].'" target="_blank">Vai alla presentazione</a>.<p>';
 						};
+						$qBio->free_result();
 						if ($mand[3] != NULL) {
 							$textMand = $textMand.'<p><a href="'.$mand[3].'" target="_blank">Vai alla biografia esterna</a>.<p>';
 						};
@@ -207,11 +219,71 @@
 	// Funzione che prende i dati di una persona
 	function get_Bio($idpersona, $conn) {
 		$textBio = "";
-		$q = $conn->query('SELECT soprannome FROM Persona WHERE id = '.$idpersona);
-		$nick = $q->fetch_row();
-		if ($nick[0] != NULL) {
-			$textBio = $textBio.'<p>Conosciuto anche come '.$nick[0].'.</p>';
+		$q = $conn->query('SELECT nome, cognome, luogo_nascita, data_nascita, luogo_morte, data_morte, soprannome FROM Persona WHERE id = '.$idpersona);
+		$dati = $q->fetch_row();
+		$textBio = $textBio.'<p>'.$dati[0].' '.$dati[1].'';
+		if ($dati[3] != NULL || $dati[5] != NULL) {
+			$textBio = $textBio.' (';
+			if ($dati[3] != NULL && $dati[5] == NULL) {
+				$textBio = $textBio.'n.  ';
+				if ($dati[2] != NULL) {
+					$q = $conn->query('SELECT nome FROM Luogo WHERE id = '.$dati[2]);
+					$luogoPop = $q->fetch_row;
+					$textBio = $textBio.$luogoPop[0].', ';
+				};
+				$textBio = $textBio.get_Data($dati[3], false);
+			} elseif ($dati[3] == NULL && $dati[5] != NULL) {
+				$textBio = $textBio.'†  ';
+				if ($dati[4] != NULL) {
+					$q = $conn->query('SELECT nome FROM Luogo WHERE id = '.$dati[4]);
+					$luogoPop = $q->fetch_row();
+					$textBio = $textBio.$luogoPop[0].', ';
+				};
+				$textBio = $textBio.get_Data($dati[5], false);
+			} else {
+				if ($dati[2] != NULL) {
+					$q = $conn->query('SELECT nome FROM Luogo WHERE id = '.$dati[2]);
+					$luogoPop = $q->fetch_row();
+					$textBio = $textBio.$luogoPop[0].', ';
+				};
+				$textBio = $textBio.get_Data($dati[3], false).' - ';
+				if ($dati[4] != NULL) {
+					$q = $conn->query('SELECT nome FROM Luogo WHERE id = '.$dati[4]);
+					$luogoPop = $q->fetch_row();
+					$textBio = $textBio.$luogoPop[0].', ';
+				};
+				$textBio = $textBio.get_Data($dati[5], false);
+			};
+			$textBio = $textBio.')';
+		} else {
+			if ($dati[2] != NULL || $dati[4] != NULL) {
+				$textBio = $textBio.' (';
+				if ($dati[2] != NULL && $dati[4] == NULL) {
+					$q = $conn->query('SELECT nome FROM Luogo WHERE id = '.$dati[2]);
+					$luogoPop = $q->fetch_row();
+					$textBio = $textBio.'nato a '.$luogoPop[0];
+				} elseif ($dati[2] == NULL && $dati[4] != NULL) {
+					$q = $conn->query('SELECT nome FROM Luogo WHERE id = '.$dati[4]);
+					$luogoPop = $q->fetch_row();
+					$textBio = $textBio.'morto a '.$luogoPop[0];
+				} elseif ($dati[2] == $dati[4]) {
+					$q = $conn->query('SELECT nome FROM Luogo WHERE id = '.$dati[2]);
+					$luogoPop = $q->fetch_row();
+					$textBio = $textBio.'nato e morto a '.$luogoPop[0];
+				} else {
+					$q = $conn->query('SELECT nome FROM Luogo WHERE id = '.$dati[2]);
+					$luogoPopN = $q->fetch_row();
+					$q = $conn->query('SELECT nome FROM Luogo WHERE id = '.$dati[4]);
+					$luogoPopM = $q->fetch_row();
+					$textBio = $textBio.'nato a '.$luogoPopN[0].' e morto a '.$luogoPopM[0];
+				};
+				$textBio = $textBio.')';
+			};
 		};
+		if ($dati[6] != NULL) {
+			$textBio = $textBio.', conosciuto anche come '.$dati[6].',';
+		};
+		$textBio = $textBio.' fu:</p>';
 		$q->free_result();
 		$textBio = $textBio."<ul>";
 		$q = $conn->query('SELECT attivita, data_inizio, data_fine FROM lavora_come, Occupazione WHERE occupazione = Occupazione.id AND persona = '.$idpersona);
