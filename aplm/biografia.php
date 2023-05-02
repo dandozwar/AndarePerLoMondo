@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <?php
 	session_start();
-	// Stabilisco una connessione con il database
-	$conn = new mysqli("localhost", "visitatore", "password", "aplm");
-	if (!$conn) {
-		die('Connsessione fallita: '.mysql_error());
-	};
-	// Controllo se l'utente non è già online
+
+	// Stabilisce una connessione con il database
+	include 'service/secrecy_vis.php';
+
+	// Controlla se l'utente non è già online
 	if (isset($_SESSION["nick"])) {
 		$q = $conn->prepare('SELECT password FROM Utente WHERE nick = ?');
 		$q->bind_param("s", $_SESSION["nick"]);
@@ -25,21 +24,20 @@
 		$q->free_result();
 	};
 
-	// Includo le funzioni
-	// Ottengo l'id della persona
+	// Ottiene l'id della persona
 	if (!isset($_GET["persona"])) {
 		header("Location: index.php");
 	};
 
-	// Raccolgo i dati generali della persona
-	$q = $conn->prepare('SELECT nome, cognome, Biografia.id FROM Persona, Biografia WHERE persona = Persona.id AND Persona.id = ?');
+	// Raccoglie i dati generali della persona
+	$q = $conn->prepare('SELECT nome, cognome, Biografia.id, schedatore ,pubblico FROM Persona, Biografia WHERE persona = Persona.id AND Persona.id = ?');
 	$q->bind_param("i", $_GET["persona"]);
 	$q->execute();
 	$q->store_result();
 	if ($q->num_rows == 0) {
 		header("Location: index.php");
 	};
-	$q->bind_result($nome, $cognome, $bio);
+	$q->bind_result($nome, $cognome, $bio, $schedatore, $pubblico);
 	$q->fetch();
 	$q->free_result();
 
@@ -70,25 +68,30 @@
 			<?php
 				echo '<h1 id="b'.$_GET["persona"].'">Andare per lo mondo</h1>';
 			?>
-			<img src="./img/LogoAPLM.png" id="logo1" class="stemmi" title="Logo di Andare per lo mondo"/>
-			<img src="./img/LogoUniPi.png" id="logo2" class="stemmi" title="Logo dell'Università di Pisa"/>
+				<a href="./index.php" target="_blank"><img src="./img/LogoAPLM.png" id="logo1" class="stemmi" title="Andare per lo mondo"/></a>
+				<a href="http://www.labcd.unipi.it/" target="_blank"><img src="./img/LogoLabCD.png" id="logo2" class="stemmi" title="Laboratorio Cultura Digitale"/></a>
 			<ul id="breadcrumb" class="breadcrumb">
 				<?php
 					if (isset($_SESSION["nick"])) {
-						echo '<input class="access_buttons" type="button" id="esci" value="Esci" onclick="esci()"/>';
+						echo '<input class="login" type="button" id="pagina_personale" value="Pagina personale" onclick="window.location.assign(\'pagina_personale.php?user='.$_SESSION["nick"].'\')"><input class="login" type="button" id="esci" value="Esci" onclick="esci()"/>';
 					} else {
-						echo '<input class="access_buttons" type="button" id="accedi" value="Accedi o registrati" onclick="accedi_registrati()"/>';
+						echo '<input class="login" type="button" id="accedi" value="Accedi o registrati" onclick="accedi_registrati()"/>';
 					};
 				?>
 			</ul>
 		</header>
-		<div id='timeline-embed' style="width: 100%; height: 600px"></div>
 		<div>
-			<h3>Commenti</h3>
-			<input id="commenta" type="button" onclick="commenta()" value="Commenta"/>
-			<div id="comment_panel" hidden="hidden">
-				<div class="close" onclick="stop_commento()">X</div>
-				<?php
+			<?php
+				if ($pubblico == 0) {
+					echo '<h2>Non hai accesso alla pagina.</h2>';
+				} else {
+					echo '<div id="timeline-embed" style="width: 100%; height: 600px"></div>
+						<div>
+							<p>Dati inseriti da <a href="pagina_personale.php?user='.$schedatore.'">'.$schedatore.'</a>.</p>
+							<h3>Commenti</h3>
+							<input id="commenta" type="button" onclick="commenta()" value="Commenta"/>
+							<div id="comment_panel" hidden="hidden">
+								<div class="close" onclick="stop_commento()">X</div>';
 					if (isset($_SESSION["nick"])) {
 						echo '
 							<form id="comment_form">
@@ -98,23 +101,23 @@
 							</form>';
 					} else {
 						echo 'Per commentare devi aver effettuato l’accesso.';
-					}; 
-				?>
-			</div>
-			<?php
-				$q = $conn->query('SELECT nome, cognome, ruolo, ente, commento FROM Commento_Biografia, Utente WHERE autore = Utente.nick AND biografia = '.$bio);
-				$totcomm = $q->num_rows;
-				if ($totcomm == 0) {
-					echo '<p>Questa biografia non ha commenti.</p>';
-				} else {
-					echo '<ul>';
-					for ($c = 0; $c < $totcomm; $c++) {
-						$comm = $q->fetch_row();
-						echo '<li>
-								<span class="commento_titolo">'.$comm[0].' '.$comm[1].', '.$comm[2].' di '.$comm[3].'</span><br/>'.$comm[4].'							
-							</li>';
 					};
-					echo '</ul>';
+					echo '</div><div>';
+					$q = $conn->query('SELECT nome, cognome, ruolo, ente, commento FROM Commento_Biografia, Utente WHERE autore = Utente.nick AND biografia = '.$bio);
+					$totcomm = $q->num_rows;
+					if ($totcomm == 0) {
+						echo '<p>Questa biografia non ha commenti.</p>';
+					} else {
+						echo '<ul>';
+						for ($c = 0; $c < $totcomm; $c++) {
+							$comm = $q->fetch_row();
+							echo '<li>
+									<span class="commento_titolo">'.$comm[0].' '.$comm[1].', '.$comm[2].' di '.$comm[3].'</span><br/>'.$comm[4].'							
+								</li>';
+						};
+						echo '</ul>';
+					};
+					echo '</div>';
 				};
 			?>
 		</div>
@@ -125,7 +128,7 @@
 					<form id="log_in_form">
 						<label for="nick">Nickname:</label><br/>
 						<input type="text" id="nick" name="nick"></input><br/><br/>
-						<label for="pass">Passoword:</label><br/>
+						<label for="pass">Password:</label><br/>
 						<input type="password" id="pass" name="pass"></input><br/><br/>
 						<input type="button" onclick="conferma_accesso()" value="Accedi"></input>
 					</form>
@@ -138,7 +141,7 @@
 					<form id="sign_up_form">
 						<label for="nick">Nickname:</label><br/>
 						<input type="text" id="nick" name="nick" placeholder="Min 3 caratteri, max 16."></input><br/><br/>
-						<label for="pass">Passoword:</label><br/>
+						<label for="pass">Password:</label><br/>
 						<input type="password" id="pass" name="pass" placeholder="Max 3 caratteri, max 16."></input><br/><br/>
 						<label for="nome">Nome:</label><br/>
 						<input type="text" id="nome" name="nome"></input><br/><br/>
@@ -154,10 +157,17 @@
 			</div>
 			<div class="credit">
 				<p>
-					<a href="mailto@alessandro.cignoni@progettohmr.it">Alessandro Cignoni</a> - © 2021<br/>
-					Tesi di laurea di Informatica Umanistica<br/>
-					Relatori: professori Laura Galoppini e Vittore Casarosa<br/>
-					Ringraziamenti: dottor Massimiliano Grava<br/>
+					<a href="mailto:alessandro.cignoni@progettohmr.it">Alessandro Cignoni</a> - © 2021-2022<br/>
+					Progetto del Laboratorio di Cultura Digitale - Università di Pisa<br/>
+					<span style="font-size: small">(Team: V. Casarosa, A. Cignoni, L. Galoppini, S. Salvatori)</span><br/><br/>
+					Nato come Tesi Triennale in Informatica Umanistica dell'Univerità di Pisa<br/>
+					<span style="font-size: small">(Tesista: A. Cignoni; relatori: L. Galoppini, V. Casarosa; ringraziamenti: M. Grava)</span>
+				</p>
+				<p>
+					<a href="./index.php" target="_blank"><img src="./img/LogoAPLM.png" class="stemmiFinali" title="Andare per lo mondo"/></a>
+					<a href="http://www.labcd.unipi.it/" target="_blank"><img src="./img/LogoLabCD.png" class="stemmiFinali" title="Laboratorio Cultura Digitale"/></a>
+					<a href="https://infouma.fileli.unipi.it/" target="_blank"><img src="./img/LogoInfoUma.png" class="stemmiFinali" title="Informatica Umanistica a Pisa"/></a>
+					<a href="https://www.unipi.it/" target="_blank"><img src="./img/LogoUniPi.png" class="stemmiFinali" title="Univeristà di Pisa"/></a>
 				</p>
 			</div>
 		</footer>
