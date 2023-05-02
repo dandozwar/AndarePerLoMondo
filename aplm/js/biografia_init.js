@@ -8,16 +8,11 @@ var nodoHome = document.createElement("li");
 nodoHome.innerHTML = "<a href='./index.php'>Home</a>"
 breadcrumb.appendChild(nodoHome);
 var persona;
-var dati = new FormData();
-dati.append("id", idpersona);
 $.ajax({
-	url: "php/post_NomeCognome.php",
 	type: "POST",
-	data: dati,
-	success: function (resJ) {persona = JSON.parse(resJ);},
-	cache: false,
-	contentType: false,
-	processData: false,
+	url: "php/trova_nome_cognome.php",
+	data: {id: idpersona},
+	success: function(resJ) { persona = JSON.parse(resJ);},
 	async: false
 });
 var nodoPresentazione = document.createElement("li");
@@ -51,32 +46,22 @@ function get_giorno (data) {
 // Inizializzazione dell'oggetto JSON e dell'array dei viaggi
 var oggetto = new Object();
 var viaggi = new Array();
-var res;
 // Titolo e descrizione biografia
-var dati = new FormData();
-dati.append("id", idpersona);
+var res;
 $.ajax({
-	url: "php/post_Biografia.php",
 	type: "POST",
-	data: dati,
-	success: function (resJ) {res = JSON.parse(resJ);},
-	cache: false,
-	contentType: false,
-	processData: false,
+	url: "php/trova_biografia.php",
+	data: {id: idpersona},
+	success: function(resJ) { res = JSON.parse(resJ);},
 	async: false
 });
 oggetto.text = { "headline" : res[0] + " " + res[1], "text": res[2] };
 // Eventi e viaggi
-var dati = new FormData();
-dati.append("id", res[3]);
 $.ajax({
-	url: "php/post_EventiViaggi.php",
 	type: "POST",
-	data: dati,
+	url: "php/trova_eventi_viaggi.php",
+	data: {id: res[3]},
 	success: function (resJ) { res = JSON.parse(resJ);},
-	cache: false,
-	contentType: false,
-	processData: false,
 	async: false
 });
 // Creazione oggetto JSON

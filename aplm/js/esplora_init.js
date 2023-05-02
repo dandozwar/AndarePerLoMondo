@@ -7,12 +7,22 @@ var nodoViaggio = document.createElement("li");
 nodoViaggio.innerHTML = "Esplora";
 breadcrumb.appendChild(nodoViaggio);
 
+// Scala
+var scala = new ol.control.ScaleLine({
+	bar: true,
+	steps: 2,
+	text: true
+});
+
 // Crea una mappa con una vista
 var map = new ol.Map({
 	target: 'map',
+	controls: ol.control.defaults().extend([scala]),
 	layers: [
 		new ol.layer.Tile({
-			source: new ol.source.OSM({url: 'http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'}) //TROVARE MODO PER SOLO FISICO
+			source: new ol.source.Stamen({
+				layer: 'terrain-background'
+			})
 		})
 	],
 	view: new ol.View({

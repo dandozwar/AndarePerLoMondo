@@ -8,8 +8,8 @@ function conferma_accesso() {
 	var form = document.getElementById("log_in_form");
 	var dati = new FormData(form);
 	$.ajax({
-		url: "php/post_accedi.php",
 		type: "POST",
+		url: "php/accedi.php",
 		data: dati,
 		success: function (resJ) {
 			alert(resJ);
@@ -17,9 +17,8 @@ function conferma_accesso() {
 				location.reload();
 			};
 		},
-		cache: false,
-		contentType: false,
 		processData: false,
+		contentType: false,
 		async: false
 	});
 };
@@ -36,8 +35,8 @@ function conferma_registrati() {
 	var form = document.getElementById("sign_up_form");
 	var dati = new FormData(form);
 	$.ajax({
-		url: "php/post_registrati.php",
 		type: "POST",
+		url: "php/registrati.php",
 		data: dati,
 		success: function (resJ) {
 			alert(resJ);
@@ -45,9 +44,8 @@ function conferma_registrati() {
 				location.reload();
 			};
 		},
-		cache: false,
-		contentType: false,
 		processData: false,
+		contentType: false,
 		async: false
 	});
 };
@@ -62,7 +60,7 @@ function accedi_registrati() {
 };
 
 function esci() {
-	$.post("php/post_esci.php", "", function (res) {
+	$.post("php/esci.php", "", function (res) {
 		location.reload();
 	});
 }

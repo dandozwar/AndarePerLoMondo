@@ -15,8 +15,8 @@ function conferma_commento(nodo, tipo) {
 		var idpersona = document.getElementsByTagName("h1")[0].id.substring(1);
 		dati.append("persona", idpersona);
 		$.ajax({
-			url: "php/post_commentaBio.php",
 			type: "POST",
+			url: "php/commenta_biografia.php",
 			data: dati,
 			success: function (resJ) {
 				alert(resJ);
@@ -24,17 +24,16 @@ function conferma_commento(nodo, tipo) {
 					location.reload();
 				};
 			},
-			cache: false,
-			contentType: false,
 			processData: false,
+			contentType: false,
 			async: false
 		});
 	} else if (tipo == 1) { // 1 = Viaggio
 		var idviaggio = document.getElementsByTagName("h2")[0].id.substring(1);
 		dati.append("viaggio", idviaggio);
 		$.ajax({
-			url: "php/post_commentaViaggio.php",
 			type: "POST",
+			url: "php/commenta_viaggio.php",
 			data: dati,
 			success: function (resJ) {
 				alert(resJ);
@@ -42,9 +41,8 @@ function conferma_commento(nodo, tipo) {
 					location.reload();
 				};
 			},
-			cache: false,
-			contentType: false,
 			processData: false,
+			contentType: false,
 			async: false
 		});
 	};

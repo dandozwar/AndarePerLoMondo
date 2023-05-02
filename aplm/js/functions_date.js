@@ -1,23 +1,3 @@
-// Funzione di gestione della data
-function get_Data (data, anno) {
-	if (anno) {
-		data = parseInt(data.substr(0, 4));
-	} else {
-		if (data.substr(5, 5) == '00-00') {
-			data = parseInt(data.substr(0, 4));
-		} else if (data.substr(8, 2) == '00') {
-			mese = parseInt(data.substr(6, 2));
-			mese = char_mese(mese);
-			data = mese + ' ' + parseInt(data.substr(0, 4));
-		} else {
-			mese = parseInt(data.substr(6, 2));
-			mese = char_mese(mese);
-			data = parseInt(data.substr(8, 2)) + ' ' + mese + ' ' + parseInt(data.substr(0, 4));
-		};
-	};
-	return data;
-};
-
 // Funzione che trasforma il mese da numero a caratteri
 function char_mese(m) {
 	mesi = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
@@ -36,4 +16,32 @@ function char_mese(m) {
 		case 12: return mesi[11];
 		default: return 'Errore';
 	};
+};
+
+// Funzione di gestione della data
+function get_Data (data, intervallo, anno) {
+	if (data == null) {
+		if (intervallo == null) {
+				data = '?';
+			} else {
+				data = intervallo;
+			};
+	} else {
+		if (anno) {
+			data = parseInt(data.substr(0, 4));
+		} else {
+			if (data.substr(5, 5) == '00-00') {
+				data = parseInt(data.substr(0, 4));
+			} else if (data.substr(8, 2) == '00') {
+				mese = parseInt(data.substr(5, 2));
+				mese = char_mese(mese);
+				data = mese + ' ' + parseInt(data.substr(0, 4));
+			} else {
+				mese = parseInt(data.substr(5, 2));
+				mese = char_mese(mese).toLowerCase();
+				data = parseInt(data.substr(8, 2)) + ' ' + mese + ' ' + parseInt(data.substr(0, 4));
+			};
+		};
+	};
+	return data;
 };

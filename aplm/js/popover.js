@@ -2,9 +2,9 @@ var mappe = new Array();
 var lastOpenChild;
 
 // Funzione che fa comparire il popover
-function pop_hover (nodo) {
+function pop_hover(nodo) {
 	if (lastOpenChild != undefined ) {
-		pop_out(lastOpenChild);
+		pop_out(lastOpenChild, "open");
 	};
 	var nodoId = nodo.id;
 	var nodoNum = nodoId.substr(0, nodoId.length-4);
@@ -25,7 +25,7 @@ function pop_hover (nodo) {
 			target: "map" + nodoNum,
 			layers: [
 				new ol.layer.Tile({
-					source: new ol.source.OSM({url: 'http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'}) //TROVARE MODO PER SOLO FISICO
+					source: new ol.source.OSM({url: 'http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'})
 				}),
 				new ol.layer.Vector({
 			  		source: vettorePunti,
@@ -42,7 +42,7 @@ function pop_hover (nodo) {
 			],
 			view: new ol.View({
 				center: ol.proj.fromLonLat([lon, lat]),
-				zoom: 8
+				zoom: 6
 			})
 		});
 		// Crea la linea e la aggiunge al vettore
@@ -55,11 +55,16 @@ function pop_hover (nodo) {
 		vettorePunti.addFeature(featurePunto);
 		mappe.push("map" + nodoNum);
 	};
-	lastOpenChild = nodoPop.firstChild;
+	lastOpenChild = nodoPop;
 };
 
 // Funzione che fa scomparire il popover
-function pop_out (nodo) {
-	var nodoPop = nodo.parentNode;
-	nodoPop.style.visibility = "hidden";
+function pop_out(nodo, tipo = "x") {
+	if (tipo == "x") {
+		var nodoPop = nodo.parentNode;
+		nodoPop.style.visibility = "hidden";
+	} else if (tipo == "open") {
+		nodo.style.visibility = "hidden";
+	};
+	lastOpenChild = undefined;
 };
