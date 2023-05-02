@@ -10,24 +10,24 @@
 					$res = $q->fetch_row();
 					$textScop = $textScop.$res[0];
 					// Destinatari viaggio
-					$textScop = $textScop.get_Destinatari ("Viaggio", $res[1], $conn);
+					$textScop = $textScop.get_Destinatari("Viaggio", $res[1], $conn);
 					// Mandanti viaggio
-					$textScop = $textScop.get_Mandanti ("Viaggio", $res[1], $conn);
+					$textScop = $textScop.get_Mandanti("Viaggio", $res[1], $conn);
 				} else {
 					for ($i = 0; $i < $j; $i++) {
 						$res = $q->fetch_row();
 						if ($i == $j-1) {
 							$textScop = $textScop.' e '.$res[0];
 							// Destinatari viaggio
-							$textScop = $textScop.get_Destinatari ("Viaggio", $res[1], $conn);
+							$textScop = $textScop.get_Destinatari("Viaggio", $res[1], $conn);
 							// Mandanti viaggio
-							$textScop = $textScop.get_Mandanti ("Viaggio", $res[1], $conn);
+							$textScop = $textScop.get_Mandanti("Viaggio", $res[1], $conn);
 						} else {
 							$textScop = $textScop.$res[0];
 							// Destinatari viaggio
-							$textScop = $textScop.get_Destinatari ("Viaggio", $res[1], $conn);
+							$textScop = $textScop.get_Destinatari("Viaggio", $res[1], $conn);
 							// Mandanti viaggio
-							$textScop = $textScop.get_Mandanti ("Viaggio", $res[1], $conn);
+							$textScop = $textScop.get_Mandanti("Viaggio", $res[1], $conn);
 						};
 					};
 				};
@@ -70,7 +70,7 @@
 	};
 
 	// Funzione per i destinatari
-	function get_Destinatari ($tipo, $idscopo, $conn) {
+	function get_Destinatari($tipo, $idscopo, $conn) {
 		$textDest = "";
 		$q2 = $conn->query('SELECT nome, cognome, id, uri FROM destinatario, Persona WHERE id = persona AND scopo = '.$idscopo);
 		$k = $q2->num_rows;
@@ -134,7 +134,7 @@
 	};
 
 	// Funzione per raccogliere i mandanti
-	function get_Mandanti ($tipo, $idscopo, $conn) {
+	function get_Mandanti($tipo, $idscopo, $conn) {
 		$textMand = "";
 		$q3 = $conn->query('SELECT nome, cognome, id, uri FROM mandante, Persona WHERE id = persona AND scopo = '.$idscopo);
 		$k = $q3->num_rows;
@@ -199,30 +199,46 @@
 
 	// Funzione che prende nascita e morte di una persona
 	function get_Vita($idpersona, $conn) {
-		$q = $conn->query('SELECT data_nascita, data_morte FROM Persona WHERE id = '.$idpersona);
+		$q = $conn->query('SELECT data_nascita, data_morte, intervallo_nascita, intervallo_morte FROM Persona WHERE id = '.$idpersona);
 		$res = $q->fetch_row();
-		$dn = "";
-		if ($res[0] == NULL) {
-			$dn = "?";
+		if ($res[2] != null) {
+			$qi = $conn->query('SELECT stringa FROM Intervallo WHERE id='.$res[2]);
+			$inte = $qi->fetch_row();
+			$int_iniz = $inte[0];
 		} else {
-			$dn = intval(substr($res[0], 0, 4));
+			$int_iniz = "?";
 		};
-		$dm = "";
-		if ($res[1] == NULL) {
-			$dm = "?";
+		if ($res[3] != null) {
+			$qi = $conn->query('SELECT stringa FROM Intervallo WHERE id='.$res[3]);
+			$inte = $qi->fetch_row();
+			$int_mort = $inte[0];
 		} else {
-			$dm = intval(substr($res[1], 0, 4));
+			$int_mort = "?";
 		};
-		return ("(".$dn."-".$dm.")");
+		return ("(".get_Data($res[0], $int_iniz, false)."-".get_Data($res[1],$int_mort, false).")");
 	};
 
 	// Funzione che prende i dati di una persona
 	function get_Bio($idpersona, $conn) {
 		$textBio = "";
-		$q = $conn->query('SELECT nome, cognome, luogo_nascita, data_nascita, luogo_morte, data_morte, soprannome FROM Persona WHERE id = '.$idpersona);
+		$q = $conn->query('SELECT nome, cognome, luogo_nascita, data_nascita, luogo_morte, data_morte, soprannome, intervallo_nascita, intervallo_morte FROM Persona WHERE id = '.$idpersona);
 		$dati = $q->fetch_row();
+		if ($dati[7] != null) {
+			$qi = $conn->query('SELECT stringa FROM Intervallo WHERE id='.$dati[7]);
+			$inte = $qi->fetch_row();
+			$int_nasc = $inte[0];
+		} else {
+			$int_nasc = "?";
+		};
+		if ($dati[8] != null) {
+			$qi = $conn->query('SELECT stringa FROM Intervallo WHERE id='.$dati[8]);
+			$inte = $qi->fetch_row();
+			$int_mort = $inte[0];
+		} else {
+			$int_mort = "?";
+		};
 		$textBio = $textBio.'<p>'.$dati[0].' '.$dati[1].'';
-		if ($dati[3] != NULL || $dati[5] != NULL) {
+		if ($dati[3] != NULL || $dati[5] != NULL || $dati[7] || $dati[8]) {
 			$textBio = $textBio.' (';
 			if ($dati[3] != NULL && $dati[5] == NULL) {
 				$textBio = $textBio.'n.  ';
@@ -231,7 +247,7 @@
 					$luogoPop = $q->fetch_row;
 					$textBio = $textBio.$luogoPop[0].', ';
 				};
-				$textBio = $textBio.get_Data($dati[3], false);
+				$textBio = $textBio.get_Data($dati[3], $int_nasc, false);
 			} elseif ($dati[3] == NULL && $dati[5] != NULL) {
 				$textBio = $textBio.'†  ';
 				if ($dati[4] != NULL) {
@@ -239,20 +255,20 @@
 					$luogoPop = $q->fetch_row();
 					$textBio = $textBio.$luogoPop[0].', ';
 				};
-				$textBio = $textBio.get_Data($dati[5], false);
+				$textBio = $textBio.get_Data($dati[5], $int_mort,  false);
 			} else {
 				if ($dati[2] != NULL) {
 					$q = $conn->query('SELECT nome FROM Luogo WHERE id = '.$dati[2]);
 					$luogoPop = $q->fetch_row();
 					$textBio = $textBio.$luogoPop[0].', ';
 				};
-				$textBio = $textBio.get_Data($dati[3], false).' - ';
+				$textBio = $textBio.get_Data($dati[3], $int_nasc, false).' - ';
 				if ($dati[4] != NULL) {
 					$q = $conn->query('SELECT nome FROM Luogo WHERE id = '.$dati[4]);
 					$luogoPop = $q->fetch_row();
 					$textBio = $textBio.$luogoPop[0].', ';
 				};
-				$textBio = $textBio.get_Data($dati[5], false);
+				$textBio = $textBio.get_Data($dati[5], $int_mort, false);
 			};
 			$textBio = $textBio.')';
 		} else {
@@ -286,14 +302,28 @@
 		$textBio = $textBio.' fu:</p>';
 		$q->free_result();
 		$textBio = $textBio."<ul>";
-		$q = $conn->query('SELECT attivita, data_inizio, data_fine FROM lavora_come, Occupazione WHERE occupazione = Occupazione.id AND persona = '.$idpersona);
+		$q = $conn->query('SELECT attivita, data_inizio, data_fine, intervallo_inizio, intervallo_fine FROM lavora_come, Occupazione WHERE occupazione = Occupazione.id AND persona = '.$idpersona.' ORDER BY COALESCE(data_inizio, data_fine)');
 		$totlavo = $q->num_rows;
 		for ($l = 0; $l < $totlavo; $l++) {
 			$lavo = $q->fetch_row();
 			$textBio = $textBio.'<li>'.$lavo[0];
-			if ($lavo[1] != NULL && $lavo[2] != NULL) {
-				$di = get_Data($lavo[1], False);
-				$df = get_Data($lavo[2], False);
+			if ($lavo[1] != NULL || $lavo[2] != NULL || $lavo[3] != NULL || $lavo[4]) {
+				if ($lavo[3] != null) {
+					$qi = $conn->query('SELECT stringa FROM Intervallo WHERE id='.$lavo[3]);
+					$inte = $qi->fetch_row();
+					$int_iniz = $inte[0];
+				} else {
+					$int_iniz = "da inserire";
+				};
+				if ($lavo[4] != null) {
+					$qi = $conn->query('SELECT stringa FROM Intervallo WHERE id='.$lavo[4]);
+					$inte = $qi->fetch_row();
+					$int_fine = $inte[0];
+				} else {
+					$int_fine = "da inserire";
+				};
+				$di = get_Data($lavo[1], $int_iniz, False);
+				$df = get_Data($lavo[2], $int_fine, False);
 				if ($di == $df) {
 					$textBio = $textBio.' (in '.$di.')';
 				} else {

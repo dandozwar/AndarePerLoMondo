@@ -1,24 +1,4 @@
 <?php
-	// Funzione di gestione della data
-	function get_Data ($data, $anno) {
-		if ($anno) {
-			$data = intval(substr($data, 0, 4));
-		} else {
-			if (substr($data, 5) == '00-00') {
-				$data = intval(substr($data, 0, 4));
-			} elseif (substr($data, 8) == '00') {
-				$mese = intval(substr($data, 5, 2));
-				$mese = char_mese($mese);
-				$data = $mese.' '.intval(substr($data, 0, 4));
-			} else {
-				$mese = intval(substr($data, 5, 2));
-				$mese = char_mese($mese);
-				$data = intval(substr($data, 8)).' '.$mese.' '.intval(substr($data, 0, 4));
-			};
-		};
-		return $data;
-	};
-
 	// Funzione che trasforma il mese da numero a caratteri
 	function char_mese($m) {
 		$mesi = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
@@ -37,5 +17,33 @@
 			case 12: return $mesi[11];
 			default: return 'Errore';
 		};
+	};
+
+	// Funzione di gestione della data
+	function get_Data ($data, $intervallo, $anno) {
+		if ($data == null || $data == "") {
+			if ($intervallo == null) {
+				$data = '?';
+			} else {
+				$data = $intervallo;
+			};
+		} else {
+			if ($anno) {
+				$data = intval(substr($data, 0, 4));
+			} else {
+				if (substr($data, 5) == '00-00') {
+					$data = intval(substr($data, 0, 4));
+				} elseif (substr($data, 8) == '00') {
+					$mese = intval(substr($data, 5, 2));
+					$mese = char_mese($mese);
+					$data = $mese.' '.intval(substr($data, 0, 4));
+				} else {
+					$mese = intval(substr($data, 5, 2));
+					$mese = char_mese($mese);
+					$data = intval(substr($data, 8)).' '.$mese.' '.intval(substr($data, 0, 4));
+				};
+			};
+		};
+		return $data;
 	};
 ?>
