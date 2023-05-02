@@ -1,0 +1,23 @@
+.dropdown {
+	position: relative;
+	display: inline-block;
+}
+
+.dropdown_content {
+	text-align: left;
+	display: none;
+	position: absolute;
+	background-color: white;
+	min-width: 160px;
+	box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.3);
+	z-index: 1;
+	width: 200px;
+	height: 200px;
+	overflow: scroll;
+}
+
+.dropdown_content div:hover {background-color: rgb(255, 255, 204)}
+
+.dropdown:hover .dropdown_content {display: block;}
+
+.blank_space {height: 200px;};
